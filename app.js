@@ -1,7 +1,8 @@
 const express = require('express');
 const userRouter = require('./src/routes/user');
 const port = process.env.PORT;
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+const errorHandler = require('./src/middleware/errorHandler');
 require('./src/db/db');
 
 const app = express();
@@ -9,7 +10,8 @@ const app = express();
 app.use([
     express.json(),
     userRouter,
-    bodyParser.json()
+    bodyParser.json(),
+    errorHandler()
 ]);
 
 

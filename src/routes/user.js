@@ -32,7 +32,7 @@ router.post('/users', async (req, res) => {
     }
 });
 
-router.post('/users/login', async (req, res) => {
+router.post('/users/login', async (req, res, next) => {
     try {
         const {
             userName,
@@ -45,14 +45,22 @@ router.post('/users/login', async (req, res) => {
             res.status(401).send({ error: 'Login failed! Check authentication credentials' });
         }
         const token = await user.generateAuthToken();
-        res.status(200).json({ user, token });
+        const responseData = {
+            user: {
+                email: user.email,
+                userName: user.userName
+            },
+            token
+        };
+        res.status(200).json({ ...responseData });
     } catch (error) {
-        res.status(400).json(error);
+        next(error);
+        //res.status(400).json(error);
     }
 });
 
 router.get('/users/me', auth, (req, res) => {
-    res.send(req.user);
+    res.status(200).json(req.user);
 });
 
 router.post('/users/me/logoutall', auth, async (req, res) => {
@@ -63,5 +71,6 @@ router.post('/users/me/logoutall', auth, async (req, res) => {
         res.status(500).send(err);
     }
 });
+
 
 module.exports = router;

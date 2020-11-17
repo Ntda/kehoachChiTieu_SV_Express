@@ -4,17 +4,23 @@ const User = require('../models/User');
 const auth = async (req, res, next) => {
     console.log('req: ' + req.header('Authorization'));
     const token = req.header('Authorization').replace('Bearer ', '');
-    const data = jwt.verify(token, process.env.JWT_KEY);
     try {
-        const user = await User.findOne({ _id: data._id, 'tokens.token': token });
+        const data = jwt.verify(token, process.env.JWT_KEY);
+        let user = await User.findOne({ _id: data._id, 'tokens.token': token });
         if (user) {
+            delete user._doc.password;
+            delete user._doc.tokens;
+            console.log(user);
             req.user = user;
-            req.token = token;
+        
             next();
+        } else {
+            res.status(401).json({ error: 'Not authorized to access this resource' });
         }
-        throw new Error();
+
     } catch (err) {
-        res.status(401).send({ error: 'Not authorized to access this resource' });
+        console.log(err)
+        res.status(401).json({ error: 'Not authorized to access this resource' });
     }
 }
 

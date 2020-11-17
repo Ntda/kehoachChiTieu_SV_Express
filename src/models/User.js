@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
+const CONST = require('../const/const');
 
 const userSchema = mongoose.Schema({
     userName: {
@@ -16,7 +17,7 @@ const userSchema = mongoose.Schema({
         unique: true,
         validate: value => {
             if (!validator.isEmail(value)) {
-                throw new Error({error: 'Invalid Email address'})
+                throw new Error({ error: 'Invalid Email address' })
             }
         }
     },
@@ -44,32 +45,32 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
     const token = jwt.sign({ _id: user._id }, process.env.JWT_KEY);
-    console.log('[generateAuthToken]: ' + user);
     user.tokens = user.tokens.concat({ token });
-    console.log('[generateAuthToken]: ' + user);
-    try{
+    try {
         await user.save();
-        console.log('[token]: ' + token);
-    }catch(error){
+    } catch (error) {
         console.log('[token]: ' + error);
     }
-  
-   
     return token;
 };
 
 userSchema.statics.findByCredentials = async function (userName, password) {
     const user = await this.findOne({ userName });
-    console.log('[findByCredentials]'+ user);
     if (!user) {
-        throw new Error({ error: 'Invalid login credentials' });
+        let error = new Error(CONST.SIGNIN.FAIL.MESSAGE);
+        error.error_message = CONST.SIGNIN.FAIL.MESSAGE;
+        error.error_code = CONST.SIGNIN.FAIL.ERRORCODE;
+        throw error;
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-        throw new Error({ error: 'Invalid login credentials' });
+        let error = new Error(CONST.SIGNIN.FAIL.MESSAGE);
+        error.error_message = CONST.SIGNIN.FAIL.MESSAGE;
+        error.error_code = CONST.SIGNIN.FAIL.ERRORCODE;
+        throw error;
     }
     return user;
 }
 
-const User = mongoose.model('User', userSchema );
-module.exports=User;
+const User = mongoose.model('User', userSchema);
+module.exports = User;
