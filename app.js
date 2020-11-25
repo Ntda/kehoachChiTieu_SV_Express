@@ -1,5 +1,6 @@
 const express = require('express');
 const userRouter = require('./src/routes/user');
+const chitieuRouter = require('./src/routes/chitieu');
 const port = process.env.PORT;
 const bodyParser = require('body-parser');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -10,6 +11,7 @@ const app = express();
 app.use([
     express.json(),
     userRouter,
+    chitieuRouter,
     bodyParser.json(),
     errorHandler()
 ]);
