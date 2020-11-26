@@ -18,19 +18,18 @@ const thoigianSchema = mongoose.Schema({
 });
 
 const thunhapSchema = mongoose.Schema({
-    key: String,
-    sotien: Number,
-    required: true
+    time: String,
+    sotien: Number
 });
 
 const chitieuThangSchema = mongoose.Schema({
-    key: String,
+    time: String,
     tienTietKiem: Number,
     chiTieuBatBuoc: Number
 });
 
 const chiTieuHangNgayDuDinhSchema = mongoose.Schema({
-    key: String,
+    time: String,
     ngay: {
         type: String,
         required: true
