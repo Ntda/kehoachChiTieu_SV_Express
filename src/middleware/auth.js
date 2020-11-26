@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
     console.log('req: ' + req.header('Authorization'));
     const token = req.header('Authorization').replace('Bearer ', '');
     try {
-        const data = jwt.verify(token, process.env.JWT_KEY);
+        const data = jwt.verify(token, 'WinterIsComingGOT2019');
         let user = await User.findOne({ _id: data._id, 'tokens.token': token });
         if (user) {
             delete user._doc.password;

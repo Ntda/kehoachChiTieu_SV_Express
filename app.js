@@ -1,7 +1,7 @@
 const express = require('express');
 const userRouter = require('./src/routes/user');
 const chitieuRouter = require('./src/routes/chitieu');
-const port = process.env.PORT;
+const port = process.env.PORT||3000;
 const bodyParser = require('body-parser');
 const errorHandler = require('./src/middleware/errorHandler');
 require('./src/db/db');
