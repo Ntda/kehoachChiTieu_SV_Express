@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const thoigianSchema = mongoose.Schema({
     userId: {
@@ -18,29 +19,49 @@ const thoigianSchema = mongoose.Schema({
 });
 
 const thunhapSchema = mongoose.Schema({
-    time: String,
-    sotien: Number
-});
-
-const chitieuThangSchema = mongoose.Schema({
-    time: String,
-    tienTietKiem: Number,
-    chiTieuBatBuoc: Number
-});
-
-const chiTieuHangNgayDuDinhSchema = mongoose.Schema({
-    time: String,
-    ngay: {
+    key: ObjectId,
+    ammount: {
         type: String,
-        required: true
-    },
-    sotien: {
-        type: Number,
-        required: true
+        require: true
     }
 });
 
-const chiTieuHangNgayThucTeSchema = mongoose.Schema({
+const chitieuBatbuocDudinhSchema = mongoose.Schema({
+    key: ObjectId,
+    totalAmmount: {
+        type: Number,
+        require: true
+    },
+    entities: [{
+        content: String,
+        ammount: String,
+        ammountNumber: {
+            type: Number,
+            require: true
+        }
+    }]
+});
+
+const chiTieuHangNgayDudinhSchema = mongoose.Schema({
+    key: ObjectId,
+    date: {
+        type: String,
+        require: true
+    },
+    totalAmmount: Number,
+    entities: [{
+        ammount: {
+            type: String,
+            require: true
+        },
+        content: {
+            type: String,
+            require: true
+        }
+    }]
+});
+
+/* const chiTieuHangNgayThucTeSchema = mongoose.Schema({
     key: String,
     ngay: {
         type: String,
@@ -56,22 +77,20 @@ const chiTieuHangNgayThucTeSchema = mongoose.Schema({
     noidung: {
         type: String
     }
-});
-
+}); */
 
 
 const Thoigian = mongoose.model('Thoigian', thoigianSchema);
 const Thunhap = mongoose.model('Thunhap', thunhapSchema);
-const ChitieuThang = mongoose.model('ChitieuThang', chitieuThangSchema);
-const ChiTieuHangNgayDuDinh = mongoose.model('ChiTieuHangNgayDuDinh', chiTieuHangNgayDuDinhSchema);
-const ChiTieuHangNgayThucte = mongoose.model('ChiTieuHangNgayThucte', chiTieuHangNgayThucTeSchema);
+const ChitieuBatbuocDudinh = mongoose.model('ChitieuBatbuocDudinh', chitieuBatbuocDudinhSchema);
+const ChiTieuHangNgayDuDinh = mongoose.model('ChiTieuHangNgayDuDinh', chiTieuHangNgayDudinhSchema);
+//const ChiTieuHangNgayThucte = mongoose.model('ChiTieuHangNgayThucte', chiTieuHangNgayThucTeSchema);
 
 const thuChi = {
     Thoigian,
     Thunhap,
-    ChitieuThang,
-    ChiTieuHangNgayDuDinh,
-    ChiTieuHangNgayThucte
+    ChitieuBatbuocDudinh,
+    ChiTieuHangNgayDuDinh
 };
 
 module.exports = thuChi;

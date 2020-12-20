@@ -12,7 +12,6 @@ const auth = async (req, res, next) => {
             delete user._doc.tokens;
             console.log(user);
             req.user = user;
-        
             next();
         } else {
             res.status(401).json({ error: 'Not authorized to access this resource' });
