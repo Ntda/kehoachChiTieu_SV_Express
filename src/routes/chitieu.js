@@ -20,13 +20,16 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
         chitieuBatbuoc,
         chitieuHangngay
     } = req.body;
+
     const thoigian = new Thoigian({
         userId: req.user._id,
         year,
         month
     });
     const result = await thoigian.save();
+
     console.log('[resutl]: ' + result._id);
+
     const thunhapDb = new Thunhap({
         key: result._id,
         ammount: thunhap.ammount
@@ -48,23 +51,18 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
 
     const chitieuHangngayModelDb = [];
 
-    for (let i = 0; i < chitieuHangngay.length; i++) {
+    const {detail}=chitieuHangngay;
+    for (let i = 0; i < detail.length; i++) {
         const document = {
             key: result._id,
-            date: chitieuHangngay[i].date,
-            totalAmmount: chitieuHangngay[i].totalAmmount,
-            entities: chitieuHangngay[i].entities.map(c => {
-                return {
-                    content: c.content,
-                    ammount: c.ammount
-                }
-            })
+            day: detail[i].day,
+            ammountNumber: detail[i].ammountNumber,
         }
         chitieuHangngayModelDb.push(document);
     }
 
     console.log('chitieuHangngayModelDb:' + JSON.stringify(chitieuHangngayModelDb));
-    ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb, (error, docs) => {
+    ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb, (error, _) => {
         if (error) {
             console.error(error);
         } else {

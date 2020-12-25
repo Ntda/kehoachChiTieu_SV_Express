@@ -44,21 +44,11 @@ const chitieuBatbuocDudinhSchema = mongoose.Schema({
 
 const chiTieuHangNgayDudinhSchema = mongoose.Schema({
     key: ObjectId,
-    date: {
-        type: String,
+    day: {
+        type: Number,
         require: true
     },
-    totalAmmount: Number,
-    entities: [{
-        ammount: {
-            type: String,
-            require: true
-        },
-        content: {
-            type: String,
-            require: true
-        }
-    }]
+    ammountNumber: Number,
 });
 
 /* const chiTieuHangNgayThucTeSchema = mongoose.Schema({
