@@ -62,13 +62,14 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
     }
 
     console.log('chitieuHangngayModelDb:' + JSON.stringify(chitieuHangngayModelDb));
-    ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb, (error, _) => {
+    await ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb, (error, _) => {
         if (error) {
             console.error(error);
         } else {
             console.log('ChiTieuHangNgayDuDinh:=> Insert successfuly');
         }
-    })
+    });
+    return res.status(200).json('Create schedule spend money success');
 });
 
 router.get('/chitieu/:day/:month/:year', async (req, res) => {
