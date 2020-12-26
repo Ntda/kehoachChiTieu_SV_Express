@@ -4,7 +4,7 @@ const {
     Thunhap,
     ChitieuBatbuocDudinh,
     ChiTieuHangNgayDuDinh,
-    ChiTieuHangNgayThucte
+    AmmountRest
 } = require('../models/ChiTieu');
 const auth = require('../middleware/auth');
 
@@ -18,7 +18,8 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
         year,
         thunhap,
         chitieuBatbuoc,
-        chitieuHangngay
+        chitieuHangngay,
+        ammountRest
     } = req.body;
 
     const thoigian = new Thoigian({
@@ -28,16 +29,15 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
     });
     const result = await thoigian.save();
 
-    console.log('[resutl]: ' + result._id);
+    //console.log('[resutl]: ' + result._id);
 
     const thunhapDb = new Thunhap({
-        key: result._id,
+        time: result._id,
         ammount: thunhap.ammount
     });
-    await thunhapDb.save();
 
     const chitieuBatbuocDb = new ChitieuBatbuocDudinh({
-        key: result._id,
+        time: result._id,
         totalAmmount: chitieuBatbuoc.totalAmmount,
         entities: chitieuBatbuoc.entities.map(c => {
             return {
@@ -47,28 +47,31 @@ router.post('/chitieuDudinh/create', auth, async (req, res) => {
             }
         })
     });
-    await chitieuBatbuocDb.save();
 
     const chitieuHangngayModelDb = [];
 
-    const {detail}=chitieuHangngay;
+    const { detail } = chitieuHangngay;
     for (let i = 0; i < detail.length; i++) {
         const document = {
-            key: result._id,
+            time: result._id,
             day: detail[i].day,
             ammountNumber: detail[i].ammountNumber,
         }
         chitieuHangngayModelDb.push(document);
     }
 
-    console.log('chitieuHangngayModelDb:' + JSON.stringify(chitieuHangngayModelDb));
-    await ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb, (error, _) => {
-        if (error) {
-            console.error(error);
-        } else {
-            console.log('ChiTieuHangNgayDuDinh:=> Insert successfuly');
-        }
+    const ammountRestDb = new AmmountRest({
+        time: result._id,
+        ammount: ammountRest
     });
+
+    await Promise.all([
+        thunhapDb.save(),
+        chitieuBatbuocDb.save(),
+        ChiTieuHangNgayDuDinh.insertMany(chitieuHangngayModelDb),
+        ammountRestDb.save()
+    ]);
+
     return res.status(200).json('Create schedule spend money success');
 });
 
@@ -79,6 +82,47 @@ router.get('/chitieu/:day/:month/:year', async (req, res) => {
     console.log('[/chitieu/:day/:month/:year]:' + day)
     const chitieuInfo = await ChiTieu.findChiTieuByDate(day, month, year);
     return res.status(200).json(chitieuInfo);
+});
+
+router.get('/chitieuDudinh/get', auth, async (req, res) => {
+    const { year, month } = req.query;
+    const timeSelected = await Thoigian.findOne({ month, year });
+    if (!timeSelected) {
+        return res.status(200).json(JSON.stringify({
+            moneyIncome: {
+                ammount: null
+            },
+            ammountRequiredSpend: {
+                totalAmmount: null,
+                entities: []
+            },
+            ammountRest: {
+                ammount: null
+            },
+            ammountDailySpend: []
+        }));
+    }
+    if (timeSelected) {
+        const time = timeSelected._id;
+
+        const [
+            moneyIncome,
+            ammountRequiredSpend,
+            ammountDailySpend,
+            ammountRest
+        ] = await Promise.all([
+            Thunhap.findOne({ time }),
+            ChitieuBatbuocDudinh.findOne({ time }),
+            ChiTieuHangNgayDuDinh.find({ time }),
+            AmmountRest.findOne({ time })
+        ]);
+        return res.status(200).json(JSON.stringify({
+            moneyIncome,
+            ammountRequiredSpend,
+            ammountDailySpend,
+            ammountRest
+        }));
+    }
 });
 
 module.exports = router;

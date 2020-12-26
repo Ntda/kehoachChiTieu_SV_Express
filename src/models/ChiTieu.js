@@ -19,7 +19,7 @@ const thoigianSchema = mongoose.Schema({
 });
 
 const thunhapSchema = mongoose.Schema({
-    key: ObjectId,
+    time: ObjectId,
     ammount: {
         type: String,
         require: true
@@ -27,7 +27,7 @@ const thunhapSchema = mongoose.Schema({
 });
 
 const chitieuBatbuocDudinhSchema = mongoose.Schema({
-    key: ObjectId,
+    time: ObjectId,
     totalAmmount: {
         type: Number,
         require: true
@@ -43,7 +43,7 @@ const chitieuBatbuocDudinhSchema = mongoose.Schema({
 });
 
 const chiTieuHangNgayDudinhSchema = mongoose.Schema({
-    key: ObjectId,
+    time: ObjectId,
     day: {
         type: Number,
         require: true
@@ -51,6 +51,10 @@ const chiTieuHangNgayDudinhSchema = mongoose.Schema({
     ammountNumber: Number,
 });
 
+const ammountRestSchema = mongoose.Schema({
+    time: ObjectId,
+    ammount: Number
+})
 /* const chiTieuHangNgayThucTeSchema = mongoose.Schema({
     key: String,
     ngay: {
@@ -74,13 +78,15 @@ const Thoigian = mongoose.model('Thoigian', thoigianSchema);
 const Thunhap = mongoose.model('Thunhap', thunhapSchema);
 const ChitieuBatbuocDudinh = mongoose.model('ChitieuBatbuocDudinh', chitieuBatbuocDudinhSchema);
 const ChiTieuHangNgayDuDinh = mongoose.model('ChiTieuHangNgayDuDinh', chiTieuHangNgayDudinhSchema);
+const AmmountRest = mongoose.model('AmmountRest', ammountRestSchema);
 //const ChiTieuHangNgayThucte = mongoose.model('ChiTieuHangNgayThucte', chiTieuHangNgayThucTeSchema);
 
 const thuChi = {
     Thoigian,
     Thunhap,
     ChitieuBatbuocDudinh,
-    ChiTieuHangNgayDuDinh
+    ChiTieuHangNgayDuDinh,
+    AmmountRest
 };
 
 module.exports = thuChi;
