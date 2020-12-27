@@ -4,7 +4,8 @@ const {
     Thunhap,
     ChitieuBatbuocDudinh,
     ChiTieuHangNgayDuDinh,
-    AmmountRest
+    AmmountRest,
+    AmmountDailySpend
 } = require('../models/ChiTieu');
 const auth = require('../middleware/auth');
 
@@ -102,27 +103,84 @@ router.get('/chitieuDudinh/get', auth, async (req, res) => {
             ammountDailySpend: []
         }));
     }
-    if (timeSelected) {
-        const time = timeSelected._id;
+    const time = timeSelected._id;
 
-        const [
-            moneyIncome,
-            ammountRequiredSpend,
-            ammountDailySpend,
-            ammountRest
-        ] = await Promise.all([
-            Thunhap.findOne({ time }),
-            ChitieuBatbuocDudinh.findOne({ time }),
-            ChiTieuHangNgayDuDinh.find({ time }),
-            AmmountRest.findOne({ time })
-        ]);
-        return res.status(200).json(JSON.stringify({
-            moneyIncome,
-            ammountRequiredSpend,
-            ammountDailySpend,
-            ammountRest
-        }));
+    const [
+        moneyIncome,
+        ammountRequiredSpend,
+        ammountDailySpend,
+        ammountRest
+    ] = await Promise.all([
+        Thunhap.findOne({ time }),
+        ChitieuBatbuocDudinh.findOne({ time }),
+        ChiTieuHangNgayDuDinh.find({ time }),
+        AmmountRest.findOne({ time })
+    ]);
+    return res.status(200).json(JSON.stringify({
+        moneyIncome,
+        ammountRequiredSpend,
+        ammountDailySpend,
+        ammountRest
+    }));
+});
+
+router.get('/chitieuThucte/getChitieuByDate', auth, async (req, res) => {
+    const {
+        day,
+        month,
+        year
+    } = req.query;
+    console.log('query' + day + month + year);
+    const timeSelected = await Thoigian.findOne({ month, year });
+    if (!timeSelected) {
+        return res.status(200).json({ ammount: 0 });
     }
+
+    const ammountDailySpend = await AmmountDailySpend.find({
+        time: timeSelected._id,
+        day
+    });
+
+    let totalAmmountSpend = 0;
+
+    if (ammountDailySpend) {
+        ammountDailySpend.forEach(spend => {
+            totalAmmountSpend += spend.ammountDailySpendNumber
+        });
+    }
+
+    const ammount = await ChiTieuHangNgayDuDinh.findOne({
+        time: timeSelected._id,
+        day
+    });
+    console.log('ammount result: ' + JSON.stringify(ammount));
+    return res.status(200).json({
+        ammount: ammount
+            ? ammount.ammountNumber - totalAmmountSpend
+            : 0
+    });
+});
+
+router.post('/chitieuThucte/createChitieuByDate', auth, async (req, res) => {
+    const {
+        month,
+        year,
+        day,
+        ammountDailySpend,
+        ammountDailySpendNumber,
+        content
+    } = req.body;
+    console.debug(req.body);
+    const timeSelected = await Thoigian.findOne({ month, year });
+    const ammountDailySpendDb = new AmmountDailySpend({
+        time: timeSelected._id,
+        day,
+        ammountDailySpend,
+        ammountDailySpendNumber,
+        content
+    });
+    await ammountDailySpendDb.save();
+    return res.status(200).json({ message: 'Create new ammount daily spend successs' });
 });
 
 module.exports = router;
