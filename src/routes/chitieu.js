@@ -130,7 +130,6 @@ router.get('/chitieuThucte/getChitieuByDate', auth, async (req, res) => {
         month,
         year
     } = req.query;
-    console.log('query' + day + month + year);
     const timeSelected = await Thoigian.findOne({ month, year });
     if (!timeSelected) {
         return res.status(200).json({ ammount: 0 });
@@ -153,12 +152,22 @@ router.get('/chitieuThucte/getChitieuByDate', auth, async (req, res) => {
         time: timeSelected._id,
         day
     });
-    console.log('ammount result: ' + JSON.stringify(ammount));
-    return res.status(200).json({
+
+    const detailAmmountDailySpend = await AmmountDailySpend.find({
+        time: timeSelected._id,
+        day
+    });
+
+    const responseDataJson = JSON.stringify({
         ammount: ammount
             ? ammount.ammountNumber - totalAmmountSpend
-            : 0
+            : 0,
+        detailAmmountDailySpend
     });
+
+    console.log('responseDataJson result: ' + responseDataJson);
+
+    return res.status(200).json(responseDataJson);
 });
 
 router.post('/chitieuThucte/createChitieuByDate', auth, async (req, res) => {
