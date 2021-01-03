@@ -5,8 +5,10 @@ const {
     ChitieuBatbuocDudinh,
     ChiTieuHangNgayDuDinh,
     AmmountRest,
-    AmmountDailySpend
+    AmmountDailySpend,
+    ActualRequiredAmmount
 } = require('../models/ChiTieu');
+
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -165,7 +167,7 @@ router.get('/chitieuThucte/getChitieuByDate', auth, async (req, res) => {
         detailAmmountDailySpend
     });
 
-    console.log('responseDataJson result: ' + responseDataJson);
+    //console.log('responseDataJson result: ' + responseDataJson);
 
     return res.status(200).json(responseDataJson);
 });
@@ -190,6 +192,41 @@ router.post('/chitieuThucte/createChitieuByDate', auth, async (req, res) => {
     });
     await ammountDailySpendDb.save();
     return res.status(200).json({ message: 'Create new ammount daily spend successs' });
+});
+
+router.get('/chitieuThucte/getChitieuBatbuocByMonthAndYear', auth, async (req, res) => {
+    const { month, year } = req.query;
+    const timeSelected = await Thoigian.findOne({ month, year });
+    const actualSchedulePromise = ChitieuBatbuocDudinh.findOne({
+        time: timeSelected._id
+    });
+
+    const actualRequiredPromise = ActualRequiredAmmount.find({
+        time: timeSelected._id
+    });
+
+    const [actualScheduleAmmount,
+        actualRequiredAmmount
+    ] = await Promise.all([actualSchedulePromise, actualRequiredPromise]);
+
+    return res.status(200).json(JSON.stringify({
+        actualScheduleAmmount,
+        actualRequiredAmmount
+    }));
+});
+
+router.post('/chitieuThucte/createChitieuBatbuoc', auth, async (req, res) => {
+    const {
+        _id,
+        content,
+        ammount,
+        ammountNumber
+    } = req.body;
+
+    const actualRequiredAmmountDb= new ActualRequiredAmmount({
+
+    });
+    console.debug(req.body);
 });
 
 module.exports = router;

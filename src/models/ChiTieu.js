@@ -42,19 +42,30 @@ const chitieuBatbuocDudinhSchema = mongoose.Schema({
     }]
 });
 
+const actualRequiredAmmountSchema = mongoose.Schema({
+    time: ObjectId,
+    requiredScheduleId: ObjectId,
+    content: String,
+    ammount: String,
+    ammountNumber: {
+        type: Number,
+        require: true
+    }
+});
+
 const chiTieuHangNgayDudinhSchema = mongoose.Schema({
     time: ObjectId,
     day: {
         type: Number,
         require: true
     },
-    ammountNumber: Number,
+    ammountNumber: Number
 });
 
 const ammountRestSchema = mongoose.Schema({
     time: ObjectId,
     ammount: Number
-})
+});
 
 const ammountDailySpend = mongoose.Schema({
     time: ObjectId,
@@ -73,6 +84,7 @@ const ChitieuBatbuocDudinh = mongoose.model('ChitieuBatbuocDudinh', chitieuBatbu
 const ChiTieuHangNgayDuDinh = mongoose.model('ChiTieuHangNgayDuDinh', chiTieuHangNgayDudinhSchema);
 const AmmountRest = mongoose.model('AmmountRest', ammountRestSchema);
 const AmmountDailySpend = mongoose.model('AmmountDailySpend', ammountDailySpend);
+const ActualRequiredAmmount = mongoose.model('ActualRequiredAmmount', actualRequiredAmmountSchema);
 
 const thuChi = {
     Thoigian,
@@ -80,7 +92,8 @@ const thuChi = {
     ChitieuBatbuocDudinh,
     ChiTieuHangNgayDuDinh,
     AmmountRest,
-    AmmountDailySpend
+    AmmountDailySpend,
+    ActualRequiredAmmount
 };
 
 module.exports = thuChi;
