@@ -217,16 +217,37 @@ router.get('/chitieuThucte/getChitieuBatbuocByMonthAndYear', auth, async (req, r
 
 router.post('/chitieuThucte/createChitieuBatbuoc', auth, async (req, res) => {
     const {
-        _id,
-        content,
-        ammount,
-        ammountNumber
+        month,
+        year,
+        entities
     } = req.body;
-
-    const actualRequiredAmmountDb= new ActualRequiredAmmount({
-
+    const timeSelected = await Thoigian.findOne({ month, year });
+    entities.forEach(async entity => {
+        const {
+            _id,
+            content,
+            ammount,
+            ammountNumber
+        } = entity;
+        const condition = {
+            time: timeSelected,
+            requiredScheduleId: _id
+        };
+        const update = {
+            content,
+            ammount,
+            ammountNumber
+        };
+        const option = {
+            upsert: true
+        };
+        await ActualRequiredAmmount.findOneAndUpdate(
+            condition,
+            update,
+            option
+        )
     });
-    console.debug(req.body);
+    return res.status(200).json({ message: 'OK' })
 });
 
 module.exports = router;

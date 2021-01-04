@@ -4,5 +4,6 @@ const connectionString='mongodb+srv://carlosNguyen:Gcsvn123@cluster0.gcte7.mongo
 mongoose.connect(connectionString,{
     useNewUrlParser: true,
     useCreateIndex: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 });
