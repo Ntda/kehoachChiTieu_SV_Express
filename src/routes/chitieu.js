@@ -164,6 +164,7 @@ router.get('/chitieuThucte/getChitieuByDate', auth, async (req, res) => {
         ammount: ammount
             ? ammount.ammountNumber - totalAmmountSpend
             : 0,
+        totalAmmount: 10000,
         detailAmmountDailySpend
     });
 
