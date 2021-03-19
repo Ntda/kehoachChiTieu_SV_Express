@@ -86,6 +86,8 @@ const AmmountRest = mongoose.model('AmmountRest', ammountRestSchema);
 const AmmountDailySpend = mongoose.model('AmmountDailySpend', ammountDailySpend);
 const ActualRequiredAmmount = mongoose.model('ActualRequiredAmmount', actualRequiredAmmountSchema);
 
+console.log('Test CI/CD');
+
 const thuChi = {
     Thoigian,
     Thunhap,

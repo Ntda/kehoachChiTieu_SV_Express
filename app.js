@@ -15,8 +15,9 @@ app.use([
     bodyParser.json(),
     errorHandler()
 ]);
-
-
+app.get('/', (req, res)=>{
+    return res.send('<h1>Welcome!</h1>')
+})
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 })
